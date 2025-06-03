@@ -191,9 +191,10 @@ color %COLOR_INFO%
 IF %notHidden% echo [%curproc%/%totalproc%] Collecting general information...
 color %COLOR_NORMAL%
 echo [+] Collecting system info... >> "%tool_folder%\log.txt"
-start "" /B /WAIT /REALTIME %SYSTEMDRIVE%\Windows\system32\systeminfo.exe > "%sdir%\systeminfo.txt" 2>> "%tool_folder%\error.txt"
+mkdir "%sdir%\General\"
+start "" /B /WAIT /REALTIME %SYSTEMDRIVE%\Windows\system32\systeminfo.exe > "%sdir%\General\systeminfo.txt" 2>> "%tool_folder%\error.txt"
 if %errorlevel% neq 0 echo [%time%] systeminfo failed. >> "%tool_folder%\error.txt"
-%SYSTEMDRIVE%\Windows\system32\ipconfig /all > "%sdir%\ipconfig_all.txt" 2>> "%tool_folder%\error.txt"
+%SYSTEMDRIVE%\Windows\system32\ipconfig /all > "%sdir%\General\ipconfig_all.txt" 2>> "%tool_folder%\error.txt"
 if %errorlevel% neq 0 echo [%time%] ipconfig failed. >> "%tool_folder%\error.txt"
 goto :Cleanup
 
@@ -206,17 +207,18 @@ color %COLOR_INFO%
 IF %notHidden% echo [%curproc%/%totalproc%] Collecting network information...
 color %COLOR_NORMAL%
 echo [+] Collecting network data... >> "%tool_folder%\log.txt"
-%SYSTEMDRIVE%\Windows\system32\netstat.exe -abno > "%sdir%\netstat_abno.txt" 2>> "%tool_folder%\error.txt"
+mkdir "%sdir%\Network"
+%SYSTEMDRIVE%\Windows\system32\netstat.exe -abno > "%sdir%\Network\netstat_abno.txt" 2>> "%tool_folder%\error.txt"
 if %errorlevel% neq 0 echo [%time%] netstat failed. >> "%tool_folder%\error.txt"
-%SYSTEMDRIVE%\Windows\system32\ipconfig.exe /displaydns > "%sdir%\dnscache.txt" 2>> "%tool_folder%\error.txt"
+%SYSTEMDRIVE%\Windows\system32\ipconfig.exe /displaydns > "%sdir%\Network\dnscache.txt" 2>> "%tool_folder%\error.txt"
 if %errorlevel% neq 0 echo [%time%] ipconfig /displaydns failed. >> "%tool_folder%\error.txt"
-%SYSTEMDRIVE%\Windows\system32\netsh.exe interface portproxy show all > "%sdir%\portproxy.txt" 2>> "%tool_folder%\error.txt"
+%SYSTEMDRIVE%\Windows\system32\netsh.exe interface portproxy show all > "%sdir%\Network\portproxy.txt" 2>> "%tool_folder%\error.txt"
 if %errorlevel% neq 0 echo [%time%] netsh portproxy failed. >> "%tool_folder%\error.txt"
 IF "%OSTYPE%" EQU "x64" (
-    SysinternalsSuite\tcpvcon64.exe /accepteula -nobanner -a -n -c > "%sdir%\tcpview.csv" 2>> "%tool_folder%\error.txt"
+    SysinternalsSuite\tcpvcon64.exe /accepteula -nobanner -a -n -c > "%sdir%\Network\tcpview.csv" 2>> "%tool_folder%\error.txt"
     if %errorlevel% neq 0 echo [%time%] tcpvcon64 failed. >> "%tool_folder%\error.txt"
 ) ELSE (
-    SysinternalsSuite\tcpvcon.exe /accepteula -nobanner -a -n -c > "%sdir%\tcpview.csv" 2>> "%tool_folder%\error.txt"
+    SysinternalsSuite\tcpvcon.exe /accepteula -nobanner -a -n -c > "%sdir%\Network\tcpview.csv" 2>> "%tool_folder%\error.txt"
     if %errorlevel% neq 0 echo [%time%] tcpvcon failed. >> "%tool_folder%\error.txt"
 )
 %SYSTEMDRIVE%\Windows\System32\ping.exe -4 -n 3 "" >nul 2>> "%tool_folder%\error.txt"
@@ -231,17 +233,18 @@ color %COLOR_INFO%
 IF %notHidden% echo [%curproc%/%totalproc%] Collecting user information...
 color %COLOR_NORMAL%
 echo [+] Collecting user data... >> "%tool_folder%\log.txt"
-%SYSTEMDRIVE%\Windows\system32\net.exe localgroup users > "%sdir%\local_users_list.txt" 2>> "%tool_folder%\error.txt"
+mkdir "%sdir%\User"
+%SYSTEMDRIVE%\Windows\system32\net.exe localgroup users > "%sdir%\User\local_users_list.txt" 2>> "%tool_folder%\error.txt"
 if %errorlevel% neq 0 echo [%time%] net localgroup users failed. >> "%tool_folder%\error.txt"
-%SYSTEMDRIVE%\Windows\system32\net.exe localgroup administrators > "%sdir%\local_admin_list.txt" 2>> "%tool_folder%\error.txt"
+%SYSTEMDRIVE%\Windows\system32\net.exe localgroup administrators > "%sdir%\User\local_admin_list.txt" 2>> "%tool_folder%\error.txt"
 if %errorlevel% neq 0 echo [%time%] net localgroup administrators failed. >> "%tool_folder%\error.txt"
-dir /a /q /o:d "%USERPROFILE%\..\" > "%sdir%\local_users_dir_modified.txt" 2>> "%tool_folder%\error.txt"
-dir /a /q /t:c /o:d "%USERPROFILE%\..\" > "%sdir%\local_users_dir_created.txt" 2>> "%tool_folder%\error.txt"
+dir /a /q /o:d "%USERPROFILE%\..\" > "%sdir%\User\local_users_dir_modified.txt" 2>> "%tool_folder%\error.txt"
+dir /a /q /t:c /o:d "%USERPROFILE%\..\" > "%sdir%\User\local_users_dir_created.txt" 2>> "%tool_folder%\error.txt"
 IF "%OSTYPE%" EQU "x64" (
-    SysinternalsSuite\PsLoggedon64.exe /accepteula -nobanner > "%sdir%\logged_on_users.txt" 2>> "%tool_folder%\error.txt"
+    SysinternalsSuite\PsLoggedon64.exe /accepteula -nobanner > "%sdir%\User\logged_on_users.txt" 2>> "%tool_folder%\error.txt"
     if %errorlevel% neq 0 echo [%time%] PsLoggedon64 failed. >> "%tool_folder%\error.txt"
 ) ELSE (
-    SysinternalsSuite\PsLoggedon.exe /accepteula -nobanner > "%sdir%\logged_on_users.txt" 2>> "%tool_folder%\error.txt"
+    SysinternalsSuite\PsLoggedon.exe /accepteula -nobanner > "%sdir%\User\logged_on_users.txt" 2>> "%tool_folder%\error.txt"
     if %errorlevel% neq 0 echo [%time%] PsLoggedon failed. >> "%tool_folder%\error.txt"
 )
 goto :Cleanup
@@ -255,45 +258,46 @@ color %COLOR_INFO%
 IF %notHidden% echo [%curproc%/%totalproc%] Checking persistence mechanisms...
 color %COLOR_NORMAL%
 echo [+] Checking persistence... >> "%tool_folder%\log.txt"
-SysinternalsSuite\sigcheck.exe /accepteula -nobanner %SYSTEMDRIVE%\Windows\system32\displayswitch.exe > "%sdir%\sigcheck_system32_displayswitch.txt" 2>> "%tool_folder%\error.txt"
-SysinternalsSuite\sigcheck.exe /accepteula -nobanner %SYSTEMDRIVE%\Windows\system32\atbroker.exe > "%sdir%\sigcheck_system32_atbroker.txt" 2>> "%tool_folder%\error.txt"
-SysinternalsSuite\sigcheck.exe /accepteula -nobanner %SYSTEMDRIVE%\Windows\system32\narrator.exe > "%sdir%\sigcheck_system32_narrator.txt" 2>> "%tool_folder%\error.txt"
-SysinternalsSuite\sigcheck.exe /accepteula -nobanner %SYSTEMDRIVE%\Windows\system32\magnify.exe > "%sdir%\sigcheck_system32_magnify.txt" 2>> "%tool_folder%\error.txt"
-SysinternalsSuite\sigcheck.exe /accepteula -nobanner %SYSTEMDRIVE%\Windows\system32\utilman.exe > "%sdir%\sigcheck_system32_utilman.txt" 2>> "%tool_folder%\error.txt"
-SysinternalsSuite\sigcheck.exe /accepteula -nobanner %SYSTEMDRIVE%\Windows\system32\sethc.exe > "%sdir%\sigcheck_system32_sethc.txt" 2>> "%tool_folder%\error.txt"
-SysinternalsSuite\sigcheck.exe /accepteula -nobanner %SYSTEMDRIVE%\Windows\system32\osk.exe > "%sdir%\sigcheck_system32_osk.txt" 2>> "%tool_folder%\error.txt"
+mkdir "%sdir%\Persistence"
+SysinternalsSuite\sigcheck.exe /accepteula -nobanner %SYSTEMDRIVE%\Windows\system32\displayswitch.exe > "%sdir%\Persistence\sigcheck_system32_displayswitch.txt" 2>> "%tool_folder%\error.txt"
+SysinternalsSuite\sigcheck.exe /accepteula -nobanner %SYSTEMDRIVE%\Windows\system32\atbroker.exe > "%sdir%\Persistence\sigcheck_system32_atbroker.txt" 2>> "%tool_folder%\error.txt"
+SysinternalsSuite\sigcheck.exe /accepteula -nobanner %SYSTEMDRIVE%\Windows\system32\narrator.exe > "%sdir%\Persistence\sigcheck_system32_narrator.txt" 2>> "%tool_folder%\error.txt"
+SysinternalsSuite\sigcheck.exe /accepteula -nobanner %SYSTEMDRIVE%\Windows\system32\magnify.exe > "%sdir%\Persistence\sigcheck_system32_magnify.txt" 2>> "%tool_folder%\error.txt"
+SysinternalsSuite\sigcheck.exe /accepteula -nobanner %SYSTEMDRIVE%\Windows\system32\utilman.exe > "%sdir%\Persistence\sigcheck_system32_utilman.txt" 2>> "%tool_folder%\error.txt"
+SysinternalsSuite\sigcheck.exe /accepteula -nobanner %SYSTEMDRIVE%\Windows\system32\sethc.exe > "%sdir%\Persistence\sigcheck_system32_sethc.txt" 2>> "%tool_folder%\error.txt"
+SysinternalsSuite\sigcheck.exe /accepteula -nobanner %SYSTEMDRIVE%\Windows\system32\osk.exe > "%sdir%\Persistence\sigcheck_system32_osk.txt" 2>> "%tool_folder%\error.txt"
 IF "%OSTYPE%" EQU "x64" (
-    SysinternalsSuite\sigcheck64.exe /accepteula -nobanner %SYSTEMDRIVE%\Windows\syswow64\displayswitch.exe > "%sdir%\sigcheck_syswow64_displayswitch.txt" 2>> "%tool_folder%\error.txt"
-    SysinternalsSuite\sigcheck64.exe /accepteula -nobanner %SYSTEMDRIVE%\Windows\syswow64\atbroker.exe > "%sdir%\sigcheck_syswow64_atbroker.txt" 2>> "%tool_folder%\error.txt"
-    SysinternalsSuite\sigcheck64.exe /accepteula -nobanner %SYSTEMDRIVE%\Windows\syswow64\narrator.exe > "%sdir%\sigcheck_syswow64_narrator.txt" 2>> "%tool_folder%\error.txt"
-    SysinternalsSuite\sigcheck64.exe /accepteula -nobanner %SYSTEMDRIVE%\Windows\syswow64\magnify.exe > "%sdir%\sigcheck_syswow64_magnify.txt" 2>> "%tool_folder%\error.txt"
-    SysinternalsSuite\sigcheck64.exe /accepteula -nobanner %SYSTEMDRIVE%\Windows\syswow64\utilman.exe > "%sdir%\sigcheck_syswow64_utilman.txt" 2>> "%tool_folder%\error.txt"
-    SysinternalsSuite\sigcheck64.exe /accepteula -nobanner %SYSTEMDRIVE%\Windows\syswow64\sethc.exe > "%sdir%\sigcheck_syswow64_sethc.txt" 2>> "%tool_folder%\error.txt"
-    SysinternalsSuite\sigcheck64.exe /accepteula -nobanner %SYSTEMDRIVE%\Windows\syswow64\osk.exe > "%sdir%\sigcheck_syswow64_osk.txt" 2>> "%tool_folder%\error.txt"
+    SysinternalsSuite\sigcheck64.exe /accepteula -nobanner %SYSTEMDRIVE%\Windows\syswow64\displayswitch.exe > "%sdir%\Persistence\sigcheck_syswow64_displayswitch.txt" 2>> "%tool_folder%\error.txt"
+    SysinternalsSuite\sigcheck64.exe /accepteula -nobanner %SYSTEMDRIVE%\Windows\syswow64\atbroker.exe > "%sdir%\Persistence\sigcheck_syswow64_atbroker.txt" 2>> "%tool_folder%\error.txt"
+    SysinternalsSuite\sigcheck64.exe /accepteula -nobanner %SYSTEMDRIVE%\Windows\syswow64\narrator.exe > "%sdir%\Persistence\sigcheck_syswow64_narrator.txt" 2>> "%tool_folder%\error.txt"
+    SysinternalsSuite\sigcheck64.exe /accepteula -nobanner %SYSTEMDRIVE%\Windows\syswow64\magnify.exe > "%sdir%\Persistence\sigcheck_syswow64_magnify.txt" 2>> "%tool_folder%\error.txt"
+    SysinternalsSuite\sigcheck64.exe /accepteula -nobanner %SYSTEMDRIVE%\Windows\syswow64\utilman.exe > "%sdir%\Persistence\sigcheck_syswow64_utilman.txt" 2>> "%tool_folder%\error.txt"
+    SysinternalsSuite\sigcheck64.exe /accepteula -nobanner %SYSTEMDRIVE%\Windows\syswow64\sethc.exe > "%sdir%\Persistence\sigcheck_syswow64_sethc.txt" 2>> "%tool_folder%\error.txt"
+    SysinternalsSuite\sigcheck64.exe /accepteula -nobanner %SYSTEMDRIVE%\Windows\syswow64\osk.exe > "%sdir%\Persistence\sigcheck_syswow64_osk.txt" 2>> "%tool_folder%\error.txt"
 )
-%SYSTEMDRIVE%\Windows\system32\wbem\wmic.exe /namespace:\\root\subscription PATH __EventConsumer get/format:list > "%sdir%\wmi_event_consumer.txt" 2>> "%tool_folder%\error.txt"
-%SYSTEMDRIVE%\Windows\system32\wbem\wmic.exe /namespace:\\root\subscription PATH __EventFilter get/format:list > "%sdir%\wmi_event_filter.txt" 2>> "%tool_folder%\error.txt"
-%SYSTEMDRIVE%\Windows\system32\wbem\wmic.exe /namespace:\\root\subscription PATH __FilterToConsumerBinding get/format:list > "%sdir%\wmi_filter_consumer_binding.txt" 2>> "%tool_folder%\error.txt"
-%SYSTEMDRIVE%\Windows\system32\wbem\wmic.exe /namespace:\\root\subscription PATH __TimerInstruction get/format:list > "%sdir%\wmi_timer_instruction.txt" 2>> "%tool_folder%\error.txt"
-%SYSTEMDRIVE%\Windows\system32\reg.exe query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Custom" > "%sdir%\reg_AppCompatFlags_Custom.txt" 2>> "%tool_folder%\error.txt"
-%SYSTEMDRIVE%\Windows\system32\reg.exe query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\InstalledSDB" > "%sdir%\reg_AppCompatFlags_InstalledSDB.txt" 2>> "%tool_folder%\error.txt"
-dir /a /t:c /q /o:d %SYSTEMDRIVE%\windows\AppPatch\Custom > "%sdir%\shim_created.txt" 2>> "%tool_folder%\error.txt"
-dir /a /q /o:d %SYSTEMDRIVE%\windows\AppPatch\Custom > "%sdir%\shim_modified.txt" 2>> "%tool_folder%\error.txt"
-dir /a /t:c /q /o:d %SYSTEMDRIVE%\windows\AppPatch\Custom\Custom64 > "%sdir%\shimx64_created.txt" 2>> "%tool_folder%\error.txt"
-dir /a /q /o:d %SYSTEMDRIVE%\windows\AppPatch\Custom\Custom64 > "%sdir%\shimx64_modified.txt" 2>> "%tool_folder%\error.txt"
+%SYSTEMDRIVE%\Windows\system32\wbem\wmic.exe /namespace:\\root\subscription PATH __EventConsumer get/format:list > "%sdir%\Persistence\wmi_event_consumer.txt" 2>> "%tool_folder%\error.txt"
+%SYSTEMDRIVE%\Windows\system32\wbem\wmic.exe /namespace:\\root\subscription PATH __EventFilter get/format:list > "%sdir%\Persistence\wmi_event_filter.txt" 2>> "%tool_folder%\error.txt"
+%SYSTEMDRIVE%\Windows\system32\wbem\wmic.exe /namespace:\\root\subscription PATH __FilterToConsumerBinding get/format:list > "%sdir%\Persistence\wmi_filter_consumer_binding.txt" 2>> "%tool_folder%\error.txt"
+%SYSTEMDRIVE%\Windows\system32\wbem\wmic.exe /namespace:\\root\subscription PATH __TimerInstruction get/format:list > "%sdir%\Persistence\wmi_timer_instruction.txt" 2>> "%tool_folder%\error.txt"
+%SYSTEMDRIVE%\Windows\system32\reg.exe query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Custom" > "%sdir%\Persistence\reg_AppCompatFlags_Custom.txt" 2>> "%tool_folder%\error.txt"
+%SYSTEMDRIVE%\Windows\system32\reg.exe query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\InstalledSDB" > "%sdir%\Persistence\reg_AppCompatFlags_InstalledSDB.txt" 2>> "%tool_folder%\error.txt"
+dir /a /t:c /q /o:d %SYSTEMDRIVE%\windows\AppPatch\Custom > "%sdir%\Persistence\shim_created.txt" 2>> "%tool_folder%\error.txt"
+dir /a /q /o:d %SYSTEMDRIVE%\windows\AppPatch\Custom > "%sdir%\Persistence\shim_modified.txt" 2>> "%tool_folder%\error.txt"
+dir /a /t:c /q /o:d %SYSTEMDRIVE%\windows\AppPatch\Custom\Custom64 > "%sdir%\Persistence\shimx64_created.txt" 2>> "%tool_folder%\error.txt"
+dir /a /q /o:d %SYSTEMDRIVE%\windows\AppPatch\Custom\Custom64 > "%sdir%\Persistence\shimx64_modified.txt" 2>> "%tool_folder%\error.txt"
 IF "%OSTYPE%" EQU "x64" (
-    start "" /B /WAIT /REALTIME SysinternalsSuite\autorunsc64.exe /accepteula -nobanner -a * -c -h -s * -o "%sdir%\autoruns.csv" 2>> "%tool_folder%\error.txt"
+    start "" /B /WAIT /REALTIME SysinternalsSuite\autorunsc64.exe /accepteula -nobanner -a * -c -h -s * -o "%sdir%\Persistence\autoruns.csv" 2>> "%tool_folder%\error.txt"
     if %errorlevel% neq 0 echo [%time%] autorunsc64 failed. >> "%tool_folder%\error.txt"
 ) ELSE (
-    start "" /B /WAIT /REALTIME SysinternalsSuite\autorunsc.exe /accepteula -nobanner -a * -c -h -s * -o "%sdir%\autoruns.csv" 2>> "%tool_folder%\error.txt"
+    start "" /B /WAIT /REALTIME SysinternalsSuite\autorunsc.exe /accepteula -nobanner -a * -c -h -s * -o "%sdir%\Persistence\autoruns.csv" 2>> "%tool_folder%\error.txt"
     if %errorlevel% neq 0 echo [%time%] autorunsc failed. >> "%tool_folder%\error.txt"
 )
-dir /a /t:c %SYSTEMDRIVE%\windows\psexesvc.exe > "%sdir%\psexesvc_created.txt" 2>> "%tool_folder%\error.txt"
-dir /a %SYSTEMDRIVE%\windows\psexesvc.exe > "%sdir%\psexesvc_modified.txt" 2>> "%tool_folder%\error.txt"
-%SYSTEMDRIVE%\Windows\system32\sc.exe query PSEXESVC > "%sdir%\psexesvc_service.txt" 2>> "%tool_folder%\error.txt"
-%SYSTEMDRIVE%\Windows\system32\reg.exe query HKLM\SYSTEM\CurrentControlSet\Services\PSEXESVC > "%sdir%\psexesvc_reg_svc.txt" 2>> "%tool_folder%\error.txt"
-dir /a /t:c /o:d %SYSTEMDRIVE%\windows\tasks > "%sdir%\windows_tasks_created.txt" 2>> "%tool_folder%\error.txt"
-dir /a /t:c /o:d %SYSTEMDRIVE%\windows\system32\tasks > "%sdir%\system32_tasks_created.txt" 2>> "%tool_folder%\error.txt"
+dir /a /t:c %SYSTEMDRIVE%\windows\psexesvc.exe > "%sdir%\Persistence\psexesvc_created.txt" 2>> "%tool_folder%\error.txt"
+dir /a %SYSTEMDRIVE%\windows\psexesvc.exe > "%sdir%\Persistence\psexesvc_modified.txt" 2>> "%tool_folder%\error.txt"
+%SYSTEMDRIVE%\Windows\system32\sc.exe query PSEXESVC > "%sdir%\Persistence\psexesvc_service.txt" 2>> "%tool_folder%\error.txt"
+%SYSTEMDRIVE%\Windows\system32\reg.exe query HKLM\SYSTEM\CurrentControlSet\Services\PSEXESVC > "%sdir%\Persistence\psexesvc_reg_svc.txt" 2>> "%tool_folder%\error.txt"
+dir /a /t:c /o:d %SYSTEMDRIVE%\windows\tasks > "%sdir%\Persistence\windows_tasks_created.txt" 2>> "%tool_folder%\error.txt"
+dir /a /t:c /o:d %SYSTEMDRIVE%\windows\system32\tasks > "%sdir%\Persistence\system32_tasks_created.txt" 2>> "%tool_folder%\error.txt"
 goto :Cleanup
 
 :Process
@@ -306,10 +310,11 @@ IF %notHidden% echo [%curproc%/%totalproc%] Collecting process information...
 color %COLOR_NORMAL%
 echo [+] Collecting process data... >> "%tool_folder%\log.txt"
 
+mkdir "%sdir%\Process"
 :: Collect process list using WMIC with error handling
 set wmic_path=%SYSTEMDRIVE%\Windows\System32\wbem\wmic.exe
-set process_txt="%sdir%\process_txt.txt"
-set process_csv="%sdir%\process_csv.csv"
+set process_txt="%sdir%\Process\process_txt.txt"
+set process_csv="%sdir%\Process\process_csv.csv"
 %wmic_path% /output:%process_txt% process list full >nul 2>> "%tool_folder%\error.txt"
 if %errorlevel% neq 0 (
     color %COLOR_ERROR%
@@ -333,16 +338,16 @@ if exist %process_txt% (
 
 :: Collect process tree using pslist with error handling
 IF "%OSTYPE%" EQU "x64" (
-    start "" /B /WAIT /REALTIME SysinternalsSuite\pslist64.exe /accepteula -t > "%sdir%\process_tree.txt" 2>> "%tool_folder%\error.txt"
+    start "" /B /WAIT /REALTIME SysinternalsSuite\pslist64.exe /accepteula -t > "%sdir%\Process\process_tree.txt" 2>> "%tool_folder%\error.txt"
     if %errorlevel% neq 0 echo [%time%] pslist64 failed. >> "%tool_folder%\error.txt"
 ) ELSE (
-    start "" /B /WAIT /REALTIME SysinternalsSuite\pslist.exe /accepteula -t > "%sdir%\process_tree.txt" 2>> "%tool_folder%\error.txt"
+    start "" /B /WAIT /REALTIME SysinternalsSuite\pslist.exe /accepteula -t > "%sdir%\Process\process_tree.txt" 2>> "%tool_folder%\error.txt"
     if %errorlevel% neq 0 echo [%time%] pslist failed. >> "%tool_folder%\error.txt"
 )
 
 :: Collect system processes using PowerShell if available
 IF %ps_avai% (
-    "%powershell_path%" -NoProfile -ExecutionPolicy Bypass -Command "Get-CimInstance Win32_Process | Select-Object ProcessId, Name, CommandLine, ExecutablePath, ParentProcessId, CreationDate | Export-Csv -Path '%sdir%\system_processes.csv' -NoTypeInformation -Encoding UTF8" 2>> "%tool_folder%\error.txt"
+    "%powershell_path%" -NoProfile -ExecutionPolicy Bypass -Command "Get-CimInstance Win32_Process | Select-Object ProcessId, Name, CommandLine, ExecutablePath, ParentProcessId, CreationDate | Export-Csv -Path '%sdir%\Process\system_processes.csv' -NoTypeInformation -Encoding UTF8" 2>> "%tool_folder%\error.txt"
     if %errorlevel% neq 0 echo [%time%] PowerShell process collection failed. >> "%tool_folder%\error.txt"
 )
 
@@ -698,4 +703,4 @@ echo                   Data Collection Completed Successfully!
 echo ==============================================================================
 color %COLOR_NORMAL%
 IF %notHidden% pause
-exit /b 0
+goto  :eof
