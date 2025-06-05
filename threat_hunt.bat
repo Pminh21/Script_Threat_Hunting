@@ -386,6 +386,7 @@ IF %gtrWin% (
     IF EXIST "%SYSTEMDRIVE%\Windows\System32\Winevt\Logs\Microsoft-Windows-WinRM%%4Operational.evtx" copy "%SYSTEMDRIVE%\Windows\System32\Winevt\Logs\Microsoft-Windows-WinRM%%4Operational.evtx" "%sdir%\win-event-log" 2>> "%tool_folder%\error.txt" || echo [%time%] Failed to copy WinRM-Operational.evtx >> "%tool_folder%\error.txt"
     IF EXIST "%SYSTEMDRIVE%\Windows\System32\Winevt\Logs\Microsoft-Windows-WMI-Activity%%4Operational.evtx" copy "%SYSTEMDRIVE%\Windows\System32\Winevt\Logs\Microsoft-Windows-WMI-Activity%%4Operational.evtx" "%sdir%\win-event-log" 2>> "%tool_folder%\error.txt" || echo [%time%] Failed to copy WMI-Activity.evtx >> "%tool_folder%\error.txt"
     IF EXIST "%SYSTEMDRIVE%\Windows\System32\Winevt\Logs\OAlerts.evtx" copy "%SYSTEMDRIVE%\Windows\System32\Winevt\Logs\OAlerts.evtx" "%sdir%\win-event-log" 2>> "%tool_folder%\error.txt" || echo [%time%] Failed to copy OAlerts.evtx >> "%tool_folder%\error.txt"
+    IF EXIST "%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-Sysmon%%4Operational.evtx" copy "%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-Sysmon%%4Operational.evtx" "%sdir%\win-event-log" 2>> "%tool_folder%\error.txt" || echo [%time%] Failed to copy Sysmon-Operational.evtx >> "%tool_folder%\error.txt"
 ) ELSE (
     xcopy "%windir%\System32\config\*.evt" "%sdir%\win-event-log" 2>> "%tool_folder%\error.txt"
 )
